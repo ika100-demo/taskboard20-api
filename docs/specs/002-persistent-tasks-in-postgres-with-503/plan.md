@@ -17,6 +17,7 @@ tasks:
     covers: [AC-002.1, AC-002.2, AC-002.3, AC-002.4, AC-002.5, AC-002.6]
     parallel_safe: false
     depends_on: [t1]
+    done: true
 ---
 
 # Plan — 002 Persistent tasks in Postgres with 503 and readiness on a database outage

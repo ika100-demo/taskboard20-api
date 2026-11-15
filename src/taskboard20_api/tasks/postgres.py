@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import builtins
+import contextlib
 import datetime
 import os
 import threading
@@ -173,7 +174,5 @@ class PostgresTaskStore:
 
 
 def _close_quietly(conn: psycopg.Connection) -> None:
-    try:
+    with contextlib.suppress(Exception):  # best effort on a broken connection
         conn.close()
-    except Exception:  # noqa: BLE001 - best effort on a broken connection
-        pass
