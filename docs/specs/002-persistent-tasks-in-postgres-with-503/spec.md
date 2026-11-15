@@ -1,7 +1,7 @@
 ---
 spec_id: 002-persistent-tasks-in-postgres-with-503
 title: Persistent tasks in Postgres with 503 and readiness on a database outage
-status: approved
+status: building
 priority: P1
 shape: service-python
 parent: ika100-demo/taskboard20-gitops:001-persistent-tasks-and-web-task-board
@@ -140,3 +140,4 @@ outage cases. Smoke tests must not assume an empty list and must tolerate two re
 
 - 2026-11-16 created from the system plan, with its criteria (spec 147)
 - 2026-11-16 approved
+- 2026-11-16 building
