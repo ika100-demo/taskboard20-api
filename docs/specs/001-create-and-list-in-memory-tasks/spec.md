@@ -1,7 +1,7 @@
 ---
 spec_id: 001-create-and-list-in-memory-tasks
 title: Create and list in-memory tasks
-status: approved
+status: building
 priority: P1
 shape: service-python
 ---
@@ -58,3 +58,4 @@ As an API client, I want to list all tasks, so that I can show the current task 
 
 - 2026-11-15 created
 - 2026-11-15 approved
+- 2026-11-15 building
