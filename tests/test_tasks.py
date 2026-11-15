@@ -152,7 +152,11 @@ def test_tasks_do_not_survive_restart() -> None:  # AC-001.7
     first = TaskStore()
     app.dependency_overrides[get_task_store] = lambda: first
     try:
-        TestClient(app).post("/tasks", json={"title": "before restart"})
+        created = TestClient(app).post("/tasks", json={"title": "before restart"})
+        assert created.status_code == 201
+        before = TestClient(app).get("/tasks")
+        assert before.status_code == 200
+        assert [t["title"] for t in before.json()] == ["before restart"]
         second = TaskStore()
         app.dependency_overrides[get_task_store] = lambda: second
         response = TestClient(app).get("/tasks")
