@@ -10,6 +10,7 @@ tasks:
     covers: [AC-002.1, AC-002.2, AC-002.4, AC-002.6]
     parallel_safe: true
     depends_on: []
+    done: true
   - id: t2
     title: Wire the Postgres store into the tasks dependency, 503 mapping and /ready
     files: [src/taskboard20_api/tasks/store.py, src/taskboard20_api/tasks/router.py, src/taskboard20_api/main.py]
