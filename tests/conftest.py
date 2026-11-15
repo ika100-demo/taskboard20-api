@@ -69,6 +69,8 @@ class PgServer:
             raise RuntimeError(f"pg_ctl {args} failed: {result.stdout} {result.stderr}")
 
     def start(self) -> None:
+        if not self.controllable:
+            return  # external server: nothing to start (stop() skips the test)
         assert self.datadir is not None
         sockdir = self.datadir.parent / "sock"
         sockdir.mkdir(exist_ok=True)

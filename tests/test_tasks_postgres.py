@@ -141,15 +141,18 @@ def test_non_answering_database_answers_503_within_6s() -> None:  # AC-002.4
             client = _use(store)
             started = time.monotonic()
             post = client.post("/tasks", json={"title": "x"})
+            post_elapsed = time.monotonic() - started
+            started = time.monotonic()
             get = client.get("/tasks")
-            elapsed = time.monotonic() - started
+            get_elapsed = time.monotonic() - started
         finally:
             store.close()
     assert post.status_code == 503
     assert post.json() == UNAVAILABLE
     assert get.status_code == 503
     assert get.json() == UNAVAILABLE
-    assert elapsed < 12  # two requests, each answered within 6 s
+    assert post_elapsed < 6
+    assert get_elapsed < 6
 
 
 def test_outage_answers_503_and_creates_nothing(  # AC-002.4
@@ -163,8 +166,10 @@ def test_outage_answers_503_and_creates_nothing(  # AC-002.4
         try:
             started = time.monotonic()
             post = client.post("/tasks", json={"title": "during outage"})
+            assert time.monotonic() - started < 6
+            started = time.monotonic()
             get = client.get("/tasks")
-            assert time.monotonic() - started < 12
+            assert time.monotonic() - started < 6
             assert post.status_code == 503
             assert post.json() == UNAVAILABLE
             assert get.status_code == 503

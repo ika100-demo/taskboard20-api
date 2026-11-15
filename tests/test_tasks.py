@@ -141,7 +141,7 @@ def test_list_tasks_in_creation_order(tasks_client: TestClient) -> None:  # AC-0
 
 
 def test_fresh_in_memory_store_lists_empty(tasks_client: TestClient) -> None:  # AC-001.5
-    # AC-001.7 (tasks lost on restart) is superseded by AC-002.1; see tests/test_tasks_postgres.py
+    # Persistence across restarts is covered in tests/test_tasks_postgres.py.
     response = tasks_client.get("/tasks")
     assert response.status_code == 200
     assert response.json() == []
