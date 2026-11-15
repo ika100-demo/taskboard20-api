@@ -140,27 +140,8 @@ def test_list_tasks_in_creation_order(tasks_client: TestClient) -> None:  # AC-0
     assert len({t["id"] for t in listed}) == 3
 
 
-def test_fresh_service_lists_empty(tasks_client: TestClient) -> None:  # AC-001.7
+def test_fresh_in_memory_store_lists_empty(tasks_client: TestClient) -> None:  # AC-001.5
+    # Persistence across restarts is covered in tests/test_tasks_postgres.py.
     response = tasks_client.get("/tasks")
-    assert response.status_code == 200
-    assert response.json() == []
-
-
-def test_tasks_do_not_survive_restart() -> None:  # AC-001.7
-    from taskboard20_api.tasks.store import TaskStore, get_task_store
-
-    first = TaskStore()
-    app.dependency_overrides[get_task_store] = lambda: first
-    try:
-        created = TestClient(app).post("/tasks", json={"title": "before restart"})
-        assert created.status_code == 201
-        before = TestClient(app).get("/tasks")
-        assert before.status_code == 200
-        assert [t["title"] for t in before.json()] == ["before restart"]
-        second = TaskStore()
-        app.dependency_overrides[get_task_store] = lambda: second
-        response = TestClient(app).get("/tasks")
-    finally:
-        app.dependency_overrides.pop(get_task_store, None)
     assert response.status_code == 200
     assert response.json() == []

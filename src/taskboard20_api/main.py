@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import os
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from typing import Annotated
 
-from fastapi import FastAPI
-from fastapi.responses import Response
+from fastapi import Depends, FastAPI
+from fastapi.responses import JSONResponse, Response
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from pydantic import BaseModel
@@ -13,13 +16,22 @@ from pydantic import BaseModel
 from . import __version__, tasks
 from .logging_config import configure_logging
 from .metrics import MetricsMiddleware
+from .tasks.store import TaskRepository, close_default_store, get_task_store
 from .tracing import configure_tracing, tracing_enabled
 
 configure_logging(level=os.environ.get("LOG_LEVEL", "INFO"))
 if tracing_enabled():
     configure_tracing()
 
-app = FastAPI(title="taskboard20-api", version=__version__)
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    """Nothing connects at startup; shutdown closes the default store."""
+    yield
+    close_default_store()
+
+
+app = FastAPI(title="taskboard20-api", version=__version__, lifespan=lifespan)
 app.add_middleware(MetricsMiddleware)
 if tracing_enabled():
     FastAPIInstrumentor.instrument_app(app)
@@ -37,9 +49,11 @@ def health() -> HealthResponse:
 
 
 @app.get("/ready", response_model=HealthResponse)
-def ready() -> HealthResponse:
-    """Readiness probe — returns 200 when the service is ready to accept traffic."""
-    return HealthResponse(status="ready")
+def ready(store: Annotated[TaskRepository, Depends(get_task_store)]) -> Response:
+    """Readiness probe — 200 when the task store answers, else 503."""
+    if store.ping():
+        return JSONResponse(content={"status": "ready"})
+    return JSONResponse(status_code=503, content={"status": "not ready"})
 
 
 @app.get("/ping")

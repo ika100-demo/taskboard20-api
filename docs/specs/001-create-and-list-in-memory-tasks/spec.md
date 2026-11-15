@@ -26,7 +26,7 @@ As an API client, I want to list all tasks, so that I can show the current task 
 - **AC-001.4** Given a running service, when a client sends `POST /tasks` whose `due_date` is not a calendar date in `YYYY-MM-DD` form (for example `"tomorrow"`, `"2026-02-30"` or `"2026-12-01T10:00:00Z"`), then the response is `422` with an error body naming the `due_date` field, and no task is created.
 - **AC-001.5** Given a running service, when a client sends `GET /tasks`, then the response is `200` with a JSON array of task objects, each with exactly the fields `id`, `title` and `due_date`. (smoke)
 - **AC-001.6** Given tasks A, B and C created in that order, when a client sends `GET /tasks`, then the array lists A, B, C in creation order, each `id` is distinct, and each task's fields equal those returned when it was created.
-- **AC-001.7** Given a freshly started service, when a client sends `GET /tasks`, then the response is `200` with `[]`; tasks created before a restart are not listed after it.
+- ~~**AC-001.7**~~ superseded by AC-002.1 on 2026-11-16: Given a freshly started service, when a client sends `GET /tasks`, then the response is `200` with `[]`; tasks created before a restart are not listed after it.
 
 ## Non-goals
 
@@ -60,3 +60,4 @@ As an API client, I want to list all tasks, so that I can show the current task 
 - 2026-11-15 approved
 - 2026-11-15 building
 - 2026-11-15 done
+- 2026-11-16 AC-001.7 superseded by AC-002.1
